@@ -10,6 +10,7 @@ class RickAndMortyAPI:
             response = requests.get(RickAndMortyAPI.BASE_URL)
             response.raise_for_status()  # Lanza una excepción si la petición falló
             data = response.json()
+            print(f"Fetching {len(data['results'])} characters")  # Línea de depuración
             return data['results']
         except requests.RequestException as e:
             log_error(f"API Error in fetch_characters: {e}")
