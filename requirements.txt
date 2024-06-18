@@ -1,3 +1,4 @@
 requests
 Pillow
 opencv-python-headless
+pyinstaller

@@ -1,14 +1,22 @@
+import os
 import logging
 
-# Configuración básica para el logueo de errores
-logging.basicConfig(filename='logs/app.log', level=logging.ERROR,
-                    format='%(asctime)s %(levelname)s %(message)s')
+# Crear el directorio de logs si no existe
+log_dir = 'logs'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
-def log_error(error_message):
+logging.basicConfig(
+    filename=os.path.join(log_dir, 'app.log'), 
+    level=logging.ERROR,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
+
+def log_error(message):
     """
     Registra un mensaje de error en el archivo de log.
     """
-    logging.error(error_message)
+    logging.error(message)
 
 def validate_username(username):
     """
