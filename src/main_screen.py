@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
-import io
 import requests
+import os
 from src.api import RickAndMortyAPI
 
 class MainScreen:
@@ -44,12 +44,18 @@ class MainScreen:
         try:
             print(f"Fetching image from: {character['image']}")  # Línea de depuración
             image_data = RickAndMortyAPI.fetch_character_image(character['image'])
-            print(f"image_data: {image_data}")  # Línea de depuración
-           
-            image = Image.open(io.BytesIO(image_data))
-            photo = ImageTk.PhotoImage(image)
-            self.character_image.config(image=photo)
-            self.character_image.image = photo
+
+            # Guardar la imagen localmente
+            image_path = f"assets/images/{character['name'].replace(' ', '_')}.png"
+            os.makedirs(os.path.dirname(image_path), exist_ok=True)
+            with open(image_path, 'wb') as f:
+                f.write(image_data)
+            print(f"Image saved at: {image_path}")  # Línea de depuración
+
+            # Mostrar la imagen en la interfaz utilizando PIL
+            image = Image.open(image_path)
+            image = image.resize((200, 200), Image.LANCZOS)  # Redimensionar la imagen
+            image.show()
 
             character_info = self.format_character_display(character)
             messagebox.showinfo("Character Info", character_info)
@@ -60,6 +66,7 @@ class MainScreen:
         except Exception as e:
             print(f"Unexpected error: {e}")
             messagebox.showerror("Error", f"Failed to display image: {e}")
+
 
     @staticmethod
     def transform_character_data(character):
