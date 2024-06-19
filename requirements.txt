@@ -2,3 +2,4 @@ requests
 Pillow
 opencv-python-headless
 pyinstaller
+unittest2

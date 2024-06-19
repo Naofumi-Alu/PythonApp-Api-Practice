@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import Toplevel, messagebox
 from PIL import Image, ImageTk
-import io
 import requests
 from src.api import RickAndMortyAPI
 import os
@@ -12,6 +11,7 @@ class MainScreen:
         self.root.title("Rick and Morty App - Main")
         self.create_main_screen()
         self.image_refs = []  # Lista para mantener referencias a ImageTk.PhotoImage
+        self.character_detail_window = None  # Inicializar la ventana de detalles del personaje
 
     def create_main_screen(self):
         self.main_frame = tk.Frame(self.root)
@@ -35,8 +35,12 @@ class MainScreen:
             from src.utils import log_error  # Importación diferida
             log_error(f"API Error: {e}")
             messagebox.showerror("API Error", f"Failed to fetch data: {e}")
+            self.characters = []  # Asegurarse de que `self.characters` esté vacío si hay un error
 
     def display_character(self, event):
+        if not self.character_list.curselection():
+            return  # No hay selección, salir de la función
+
         selected_index = self.character_list.curselection()[0]
         character = self.characters[selected_index]
 
@@ -66,23 +70,27 @@ class MainScreen:
             messagebox.showerror("Error", f"Failed to display image: {e}")
 
     def buildWindowCharacter(self, character, image_path):
-        new_window = Toplevel(self.root)
-        new_window.title(character['name'])
+        if self.character_detail_window:  # Destruir la ventana existente si hay una
+            self.character_detail_window.destroy()
 
-        info_frame = tk.Frame(new_window)
+        self.character_detail_window = Toplevel(self.root)
+        self.character_detail_window.title(character['name'])
+
+        info_frame = tk.Frame(self.character_detail_window)
         info_frame.pack(pady=10)
 
         image = Image.open(image_path)
         image = image.resize((200, 200), Image.LANCZOS)
         photo = ImageTk.PhotoImage(image)
 
-        character_info_label = tk.Label(info_frame, text=self.format_character_display(character), justify=tk.LEFT)
+        # Asigna un nombre al label del personaje para identificarlo en las pruebas
+        character_info_label = tk.Label(info_frame, text=self.format_character_display(character), justify=tk.LEFT, name='character_name')
         character_info_label.grid(row=0, column=0, padx=10)
 
         character_image_label = tk.Label(info_frame, image=photo)
         character_image_label.grid(row=0, column=1, padx=10)
         character_image_label.image = photo  # Mantener referencia
-        
+
     @staticmethod
     def transform_character_data(character):
         return {
