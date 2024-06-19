@@ -4,22 +4,21 @@ block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=['.'],
+    pathex=[],
     binaries=[],
     datas=[
-        ('assets', 'assets'), 
-        ('src', 'src'), 
-        ('logs', 'logs')
+        ('assets/images/*', 'assets/images'),  # Asegúrate de incluir los assets necesarios
+        ('src/*.py', 'src'),  # Incluye todos los archivos Python del directorio src
     ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    noarchive=False,
-    optimize=0,
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
@@ -35,11 +34,9 @@ exe = EXE(
     upx=True,
     console=False,
     disable_windowed_traceback=False,
-    argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None
 )
 
 coll = COLLECT(
